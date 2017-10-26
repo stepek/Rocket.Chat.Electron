@@ -1,7 +1,7 @@
 const os = require('os');
 const fs = require('fs');
 const checker = require('spellchecker');
-const { remote, webFrame } = require('electron');
+const { remote, webFrame, shell } = require('electron');
 const { MenuItem, dialog } = remote;
 const i18n = require('../../i18n/index');
 
@@ -328,6 +328,17 @@ class SpellCheck {
             }
 
             setTimeout(() => {
+                if (event.target.nodeName === 'A') {
+                    const targetLink = event.target.href;
+
+                    template.unshift({
+                        label: i18n.__('Open_Link'),
+                        click: () => {
+                            shell.openExternal(targetLink);
+                        }
+                    });
+                }
+
                 if (['TEXTAREA', 'INPUT'].indexOf(event.target.nodeName) > -1) {
                     const text = window.getSelection().toString().trim();
                     if (text !== '' && !this.isCorrect(text)) {
